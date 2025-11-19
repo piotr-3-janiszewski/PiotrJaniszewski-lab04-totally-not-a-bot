@@ -98,20 +98,27 @@ Funkcja `get_bot(bot_type, platform)` musi dalej działać! Możesz zmienić jej
 ## FAQ
 
 **Q: Czy to naprawdę jest problem?**
+
 A: Tak! 10 botów × 10 platform = 100 klas. Z Bridge = 20 klas. Różnica jest kolosalna.
 
+
 **Q: Co z tą funkcją `get_bot()`?**
+
 A: Możesz ją zrefaktoryzować, ale musi dalej przyjmować te same parametry i zwracać obiekt z metodą `generate_post()`.
 
+
 **Q: Mogę usunąć te wszystkie klasy typu TrollTwitterBot?**
+
 A: Tak! Po refaktoryzacji nie będą potrzebne. Ale `get_bot("Troll", "Twitter")` musi dalej działać.
 
+
 **Q: A co z tym randomem w generowaniu treści?**
+
 A: Zostaw go. Boty są nieprzewidywalne, tak jak prawdziwe.
 
 ---
 
-*"Jedyną rzeczą gorszą od eksplozji klas jest eksplozja prawdziwych botów w internecie"* - Robert Makłowicz (prawdopodobnie)
+*"Jedyną rzeczą gorszą od eksplozji klas jest eksplozja prawdziwych botów w internecie"* - Wojciech Cejrowski (prawdopodobnie)
 
 **Pro tip:** Jeśli po refaktoryzacji dodanie nowej platformy wymaga więcej niż jednej klasy - coś poszło nie tak. Bridge powinien sprawić, że każdy wymiar rozszerza się niezależnie!
 
