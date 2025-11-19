@@ -1,51 +1,51 @@
 # Lab 04: Totally Not A Bot
 
-## Czy wiesz, ?e...
-Wed?ug niektórych badań, nawet 15% kont na Twitterze to boty. Ale ten kod ma wi?kszy problem ni? boty - ma **eksplozj? klas**!
+## Czy wiesz, 偶e...
+Wed艂ug niekt贸rych bada艅, nawet 15% kont na Twitterze to boty. Ale ten kod ma wi臋kszy problem ni偶 boty - ma **eksplozj臋 klas**!
 
 ## Twoje zadanie
-Dosta?e? kod "symulatora botów internetowych" (oczywi?cie w celach edukacyjnych). 
+Dosta艂e艣 kod "symulatora bot贸w internetowych" (oczywi艣cie w celach edukacyjnych). 
 
-Problem? Poprzedni developer stworzy? **16 osobnych klas** - po jednej dla ka?dej kombinacji typu bota i platformy. TrollTwitterBot, TrollFacebookBot, SpammerLinkedInBot...
+Problem? Poprzedni developer stworzy艂 **16 osobnych klas** - po jednej dla ka偶dej kombinacji typu bota i platformy. TrollTwitterBot, TrollFacebookBot, SpammerLinkedInBot...
 
-Teraz szef mówi: "Dodaj obs?ug? Mastodona i Wykopu!"
+Teraz szef m贸wi: "Dodaj obs艂ug臋 Mastodona i Wykopu!"
 
-Ty patrzysz na kod i my?lisz: "To b?dzie kolejne **8 klas**. A jak dodamy jeszcze jednego bota, to kolejne **6**. I tak w nieskończono??..."
+Ty patrzysz na kod i my艣lisz: "To b臋dzie kolejne **8 klas**. A jak dodamy jeszcze jednego bota, to kolejne **6**. I tak w niesko艅czono艣膰..."
 
-**Rozwi?zanie:** Wzorzec Bridge!
+**Rozwi膮zanie:** Wzorzec Bridge!
 
 ## Co zawiera repozytorium
-- `bot_simulator.py` - 16 klas które robi? prawie to samo (eksplozja!)
-- `test_bot_simulator.py` - testy (NIE RUSZA?!)
+- `bot_simulator.py` - 16 klas kt贸re robi膮 prawie to samo (eksplozja!)
+- `test_bot_simulator.py` - testy (NIE RUSZA膯!)
 - Ten README
-- Co?tam
+- Co艣tam
 
-## Problem do rozwi?zania
-Mamy 4 typy botów:
-- **Troll** - prowokuje k?ótnie
+## Problem do rozwi膮zania
+Mamy 4 typy bot贸w:
+- **Troll** - prowokuje k艂贸tnie
 - **Spammer** - promuje krypto i "okazje"
-- **Conspiracist** - wsz?dzie widzi spiski
-- **FakeNews** - szerzy dezinformacj?
+- **Conspiracist** - wsz臋dzie widzi spiski
+- **FakeNews** - szerzy dezinformacj臋
 
 I 4 platformy:
-- **Twitter** - krótko, z hashtagami
-- **Facebook** - boomerski styl, du?o emotek
-- **LinkedIn** - menad?erski be?kot
+- **Twitter** - kr贸tko, z hashtagami
+- **Facebook** - boomerski styl, du偶o emotek
+- **LinkedIn** - menad偶erski be艂kot
 - **TikTok** - GenZ slang
 
-**4 × 4 = 16 klas!** A ka?da ma zduplikowany kod generowania tre?ci...
+**4 脳 4 = 16 klas!** A ka偶da ma zduplikowany kod generowania tre艣ci...
 
 ## Instrukcja
-1. Sklonuj repo i stwórz branch `lab4_nazwisko1_nazwisko2`
-2. Uruchom testy: `pytest` (powinny przej??)
-3. Zrefaktoryzuj kod u?ywaj?c wzorca Bridge:
-   - Stwórz hierarchi? `Platform` (abstrakcja implementacji)
-   - Stwórz hierarchi? `Bot` (abstrakcja)
-   - Po??cz je "mostem" - Bot ma referencj? do Platform
-4. Uruchom testy ponownie (MUSZ? przej??!)
-5. Commit + push na SWóJ branch
+1. Sklonuj repo i stw贸rz branch `lab4_nazwisko1_nazwisko2`
+2. Uruchom testy: `pytest` (powinny przej艣膰)
+3. Zrefaktoryzuj kod u偶ywaj膮c wzorca Bridge:
+   - Stw贸rz hierarchi臋 `Platform` (abstrakcja implementacji)
+   - Stw贸rz hierarchi臋 `Bot` (abstrakcja)
+   - Po艂膮cz je "mostem" - Bot ma referencj臋 do Platform
+4. Uruchom testy ponownie (MUSZ膭 przej艣膰!)
+5. Commit + push na SW脫J branch
 
-## Wskazówki
+## Wskaz贸wki
 
 ### Struktura Bridge
 ```python
@@ -73,46 +73,46 @@ class Bot(ABC):
 ```
 
 ### Co idzie gdzie?
-- **Bot** wie CO powiedzie? (trollowanie, spamowanie, teorie spiskowe)
-- **Platform** wie JAK to sformatowa? (hashtagi Twittera, emotki Facebooka)
-- **Most** ??czy jedno z drugim przez kompozycj?
+- **Bot** wie CO powiedzie膰 (trollowanie, spamowanie, teorie spiskowe)
+- **Platform** wie JAK to sformatowa膰 (hashtagi Twittera, emotki Facebooka)
+- **Most** 艂膮czy jedno z drugim przez kompozycj臋
 
 ### Zachowaj API!
-Funkcja `get_bot(bot_type, platform)` musi dalej dzia?a?! Mo?esz zmieni? jej implementacj?, ale sygnatura zostaje.
+Funkcja `get_bot(bot_type, platform)` musi dalej dzia艂a膰! Mo偶esz zmieni膰 jej implementacj臋, ale sygnatura zostaje.
 
 ## Co zyskasz?
 - **8 klas zamiast 16** (4 boty + 4 platformy)
 - Dodanie Mastodona = **1 nowa klasa** (nie 4!)
 - Dodanie nowego bota = **1 nowa klasa** (nie 4!)
-- Zero duplikacji kodu generowania tre?ci
-- Mo?liwo?? zmiany platformy w runtime!
+- Zero duplikacji kodu generowania tre艣ci
+- Mo偶liwo艣膰 zmiany platformy w runtime!
 
 ## Kryteria oceny
-- Testy przechodz?
-- U?yty wzorzec Bridge
+- Testy przechodz膮
+- U偶yty wzorzec Bridge
 - Brak duplikacji kodu
-- ?atwo doda? now? platform? (1 klasa)
-- ?atwo doda? nowego bota (1 klasa)
-- Prowadz?cy nie p?aka?, gdy próbowa? czyta? kod
+- 艁atwo doda膰 now膮 platform臋 (1 klasa)
+- 艁atwo doda膰 nowego bota (1 klasa)
+- Prowadz膮cy nie p艂aka艂, gdy pr贸bowa艂 czyta膰 kod
 
 ## FAQ
 
-**Q: Czy to naprawd? jest problem?**
-A: Tak! 10 botów × 10 platform = 100 klas. Z Bridge = 20 klas. Ró?nica jest kolosalna.
+**Q: Czy to naprawd臋 jest problem?**
+A: Tak! 10 bot贸w 脳 10 platform = 100 klas. Z Bridge = 20 klas. R贸偶nica jest kolosalna.
 
-**Q: Co z t? funkcj? `get_bot()`?**
-A: Mo?esz j? zrefaktoryzowa?, ale musi dalej przyjmowa? te same parametry i zwraca? obiekt z metod? `generate_post()`.
+**Q: Co z t膮 funkcj膮 `get_bot()`?**
+A: Mo偶esz j膮 zrefaktoryzowa膰, ale musi dalej przyjmowa膰 te same parametry i zwraca膰 obiekt z metod膮 `generate_post()`.
 
-**Q: Mog? usun?? te wszystkie klasy typu TrollTwitterBot?**
-A: Tak! Po refaktoryzacji nie b?d? potrzebne. Ale `get_bot("Troll", "Twitter")` musi dalej dzia?a?.
+**Q: Mog臋 usun膮膰 te wszystkie klasy typu TrollTwitterBot?**
+A: Tak! Po refaktoryzacji nie b臋d膮 potrzebne. Ale `get_bot("Troll", "Twitter")` musi dalej dzia艂a膰.
 
-**Q: A co z tym randomem w generowaniu tre?ci?**
-A: Zostaw go. Boty s? nieprzewidywalne, tak jak prawdziwe.
+**Q: A co z tym randomem w generowaniu tre艣ci?**
+A: Zostaw go. Boty s膮 nieprzewidywalne, tak jak prawdziwe.
 
 ---
 
-*"Jedyn? rzecz? gorsz? od eksplozji klas jest eksplozja prawdziwych botów w internecie"* - Robert Mak?owicz (prawdopodobnie)
+*"Jedyn膮 rzecz膮 gorsz膮 od eksplozji klas jest eksplozja prawdziwych bot贸w w internecie"* - Robert Mak艂owicz (prawdopodobnie)
 
-**Pro tip:** Je?li po refaktoryzacji dodanie nowej platformy wymaga wi?cej ni? jednej klasy - co? posz?o nie tak. Bridge powinien sprawi?, ?e ka?dy wymiar rozszerza si? niezale?nie!
+**Pro tip:** Je艣li po refaktoryzacji dodanie nowej platformy wymaga wi臋cej ni偶 jednej klasy - co艣 posz艂o nie tak. Bridge powinien sprawi膰, 偶e ka偶dy wymiar rozszerza si臋 niezale偶nie!
 
-**Disclaimer:** Ten symulator jest satyr?.
+**Disclaimer:** Ten symulator jest satyr膮.
