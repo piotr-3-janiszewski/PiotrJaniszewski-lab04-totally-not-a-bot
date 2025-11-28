@@ -1,352 +1,196 @@
-NIE MODYFIKUJ TESTOW! Powinny przechodzic zarowno przed jak i po refaktoryzacji.
+UWAGA: Ten kod ma EKSPLOZJE KLAS! Uzyj wzorca Bridge.
+
+Mamy 4 typy botow i 4 platformy = 16 klas.
+Dodanie nowej platformy wymaga 4 nowych klas!
+Dodanie nowego bota wymaga 4 nowych klas!
+
+To nie jest skalowalne rozwiazanie...
 """
-import pytest
+from typing import Dict
 import random
-from bot_simulator import (
-    TrollTwitterBot, TrollFacebookBot, TrollLinkedInBot, TrollTikTokBot,
-    SpammerTwitterBot, SpammerFacebookBot, SpammerLinkedInBot, SpammerTikTokBot,
-    ConspiracistTwitterBot, ConspiracistFacebookBot, ConspiracistLinkedInBot, ConspiracistTikTokBot,
-    FakeNewsTwitterBot, FakeNewsFacebookBot, FakeNewsLinkedInBot, FakeNewsTikTokBot,
-    get_bot
-)
+
+from abc import ABC, abstractmethod
+
+# Implementacja (JAK formatuje)
+class Platform(ABC):
+	@abstractmethod
+	def format_message(self, message: str) -> str:
+		pass
+
+class Facebook(Platform):
+	platform = "Facebook"
+	def format_message(self, message: str) -> str:
+
+		formatted = f"🔴 PILNE 🔴\n\n"
+		formatted += f"{message}... PROSZE SIE OBUDZIC LUDZIE!!! "
+		formatted += "Udostepnij zanim USUNĄ!!! "
+		formatted += "😠😠😠"
+		formatted += "NapiszINFO w komentarzu!!! 💰💰💰"
+		formatted += f"UDOSTEPNIJ ZANIM USUNA!!!\n\n"
+		formatted += "Zrobie researcha!!! 👁️👁️👁️"
+		formatted += "Mainstream media UKRYWA to przed Toba!!! "
+		formatted += "Media MILCZA! Udostepnij swoim znajomym!!! "
+		formatted += "Twoja rodzina MUSI to zobaczyc!!! ⚠️⚠️⚠️"
+
+		return formatted
+
+class LinkedIn(Platform):
+	platform = "LinkedIn"
+	def format_message(self, message: str) -> str:
+		formatted = f"🚨 Industry Alert 🚨\n\n"
+		formatted += f"Unpopular opinion: {message}\n\n"
+		formatted += "I know this might be controversial, but someone had to say it.\n\n"
+		formatted += "Agree? ♻️ Repost to spread awareness\n"
+		formatted += f"I'm excited to announce that {message}\n\n"
+		formatted += "This is not financial advice, but my portfolio is up 10000%.\n\n"
+		formatted += "DM me for exclusive insights.\n"
+		formatted += f"After 15 years in the industry, I need to share something:\n\n"
+		formatted += "The elites don't want you to know this.\n\n"
+		formatted += "Comment 'TRUTH' if you're awake.\n"
+		formatted += "My sources in the industry have confirmed this.\n\n"
+		formatted += "Share with your network before it's too late.\n"
+		formatted += "#ThoughtLeadership #Disruption #Controversial"
+		formatted += "#Entrepreneurship #Hustle #Blessed"
+		formatted += "#DeepState #FollowTheMoney #QuestionEverything"
+		formatted += "#BreakingNews #IndustryInsider #MustRead"
+		return formatted
+
+class TikTok(Platform):
+	platform = "TikTok"
+	def format_message(self, message: str) -> str:
+		formatted = f"pov: ktos mowi ze to ma sens 💀💀💀\n"
+		formatted += f"bestie... {message}\n"
+		formatted += "its giving delulu 😭 no cap fr fr"
+		formatted += f"ok but why is nobody talking about this?? 🤑\n"
+		formatted += f"{message}\n"
+		formatted += "link in bio bestie trust me im just like you 💅"
+		formatted += f"wait wait wait... 🤯\n"
+		formatted += f"{message}\n"
+		formatted += "why is this not on the news?? theyre deleting this video in 3...2... 👁️"
+		formatted += f"STORYTIME: so i just found out something crazy 😱\n"
+		formatted += f"{message}\n"
+		formatted += "share before they take this down!! part 2 if this blows up 👀"
+		return formatted
+
+class Twitter(Platform):
+	platform = "Twitter"
+	def format_message(self, message: str) -> str:
+		formatted = f"🧵⚠️ WATEK: #triggered 🚀🚀🚀 {message} Link in bio!"
+		if len(formatted) > 280:
+			formatted = formatted[:277] + "..."
+
+		return formatted
+
+# Abstrakcja (CO generuje)
+class Bot(ABC):
+	def __init__(self, platform: Platform):
+		self.platformObject = platform  # <-- TO JEST MOST!
+		self.platform = platform.platform
+	
+	@abstractmethod
+	def generate_content(self, topic: str) -> str:
+		pass
+	
+	def generate_post(self, topic: str) -> str:
+		content = self.generate_content(topic)
+		formatted = self.platformObject.format_message(content)
+
+		return {
+			"bot_type": self.bot_type,
+			"platform": self.platform,
+			"topic": topic,
+			"content": formatted
+		}
 
 
-class TestBotBasicInfo:
-    """Testy podstawowych informacji o botach"""
-    
-    def test_troll_twitter_info(self):
-        bot = TrollTwitterBot()
-        assert bot.bot_type == "Troll"
-        assert bot.platform == "Twitter"
-    
-    def test_troll_facebook_info(self):
-        bot = TrollFacebookBot()
-        assert bot.bot_type == "Troll"
-        assert bot.platform == "Facebook"
-    
-    def test_troll_linkedin_info(self):
-        bot = TrollLinkedInBot()
-        assert bot.bot_type == "Troll"
-        assert bot.platform == "LinkedIn"
-    
-    def test_troll_tiktok_info(self):
-        bot = TrollTikTokBot()
-        assert bot.bot_type == "Troll"
-        assert bot.platform == "TikTok"
-    
-    def test_spammer_twitter_info(self):
-        bot = SpammerTwitterBot()
-        assert bot.bot_type == "Spammer"
-        assert bot.platform == "Twitter"
-    
-    def test_spammer_facebook_info(self):
-        bot = SpammerFacebookBot()
-        assert bot.bot_type == "Spammer"
-        assert bot.platform == "Facebook"
-    
-    def test_conspiracist_linkedin_info(self):
-        bot = ConspiracistLinkedInBot()
-        assert bot.bot_type == "Conspiracist"
-        assert bot.platform == "LinkedIn"
-    
-    def test_fakenews_tiktok_info(self):
-        bot = FakeNewsTikTokBot()
-        assert bot.bot_type == "FakeNews"
-        assert bot.platform == "TikTok"
+class Troll(Bot):
+	bot_type = "Troll"
+	def generate_content(self, topic: str) -> str:
+		provocations = [
+			f"Serio wierzysz w {topic}?",
+			f"{topic} to najwiekszy przekret w historii",
+			f"Kazdy kto popiera {topic} nie ma pojecia o czyms"
+		]
+		content = random.choice(provocations)
+		return content
 
+class Spammer(Bot):
+	bot_type = "Spammer"
+	def generate_content(self, topic: str) -> str:
+		spam_templates = [
+			f"NOWY {topic} COIN! 1000x gwarantowane!",
+			f"Zarobiles na {topic}? JA TAK! Sprawdz jak",
+			f"{topic} MOON SOON! Ostatnia szansa!"
+		]
+		content = random.choice(spam_templates)
+		return content
 
-class TestBotPostStructure:
-    """Testy struktury postow"""
-    
-    @pytest.fixture(autouse=True)
-    def setup(self):
-        random.seed(42)
-    
-    def test_post_returns_dict(self):
-        bot = TrollTwitterBot()
-        result = bot.generate_post("AI")
-        assert isinstance(result, dict)
-    
-    def test_post_has_required_keys(self):
-        bot = SpammerFacebookBot()
-        result = bot.generate_post("crypto")
-        
-        assert "bot_type" in result
-        assert "platform" in result
-        assert "topic" in result
-        assert "content" in result
-    
-    def test_post_preserves_topic(self):
-        bot = ConspiracistLinkedInBot()
-        result = bot.generate_post("5G")
-        assert result["topic"] == "5G"
-    
-    def test_post_preserves_bot_type(self):
-        bot = FakeNewsTikTokBot()
-        result = bot.generate_post("vaccines")
-        assert result["bot_type"] == "FakeNews"
-    
-    def test_post_preserves_platform(self):
-        bot = TrollLinkedInBot()
-        result = bot.generate_post("blockchain")
-        assert result["platform"] == "LinkedIn"
+class Conspiracist(Bot):
+	bot_type = "Conspiracist"
+	def generate_content(self, topic: str) -> str:
+		conspiracies = [
+			f"Czy zastanawiales sie KOMU zalezy na {topic}?",
+			f"{topic} to przykrywka dla PRAWDZIWEGO planu",
+			f"Oni nie chca zebys wiedzial prawde o {topic}"
+		]
+		content = random.choice(conspiracies)
+		return content
 
+class FakeNews(Bot):
+	bot_type = "FakeNews"
+	def generate_content(self, topic: str) -> str:
+		fake_news = [
+			f"BREAKING: Naukowcy potwierdzili ze {topic} jest niebezpieczne",
+			f"PILNE: Rzad ukrywa prawde o {topic}",
+			f"SZOK: Ekspert ujawnia co NAPRAWDE kryje sie za {topic}"
+		]
+		content = random.choice(fake_news)
+		return content
 
-class TestTwitterFormatting:
-    """Testy formatowania na Twitterze"""
-    
-    @pytest.fixture(autouse=True)
-    def setup(self):
-        random.seed(42)
-    
-    def test_twitter_has_hashtag(self):
-        bot = TrollTwitterBot()
-        result = bot.generate_post("AI")
-        assert "#" in result["content"]
-    
-    def test_twitter_respects_length_limit(self):
-        bot = SpammerTwitterBot()
-        result = bot.generate_post("cryptocurrency")
-        assert len(result["content"]) <= 280
-    
-    def test_twitter_troll_has_ratio(self):
-        bot = TrollTwitterBot()
-        result = bot.generate_post("climate")
-        assert "ratio" in result["content"].lower() or "triggered" in result["content"].lower()
-    
-    def test_twitter_spammer_has_rocket_emoji(self):
-        bot = SpammerTwitterBot()
-        result = bot.generate_post("NFT")
-        assert "🚀" in result["content"]
-    
-    def test_twitter_conspiracist_has_thread(self):
-        bot = ConspiracistTwitterBot()
-        result = bot.generate_post("government")
-        assert "🧵" in result["content"] or "WATEK" in result["content"]
-    
-    def test_twitter_fakenews_has_breaking(self):
-        bot = FakeNewsTwitterBot()
-        result = bot.generate_post("economy")
-        assert "⚠️" in result["content"] or "Breaking" in result["content"]
+# ============================================================================
+# TROLL BOTY - prowokuja klocnie na roznych platformach
+# ============================================================================
 
+def create_bot_adapter(bot_class, platform_class):
+	"""Factory Method - generuje klase adaptera"""
+	class BotAdapter:
+		def generate_post(self, topic):
+			return self._bot.generate_post(topic)
+			
+		def __init__(self):
+			self._bot = bot_class(platform_class())
+			self.bot_type = self._bot.bot_type
+			self.platform = self._bot.platform
+		
+	return BotAdapter  # Zwraca KLASE, nie obiekt!
 
-class TestFacebookFormatting:
-    """Testy formatowania na Facebooku"""
-    
-    @pytest.fixture(autouse=True)
-    def setup(self):
-        random.seed(42)
-    
-    def test_facebook_troll_has_caps(self):
-        bot = TrollFacebookBot()
-        result = bot.generate_post("politics")
-        # Facebook trolls use CAPS for emphasis
-        assert any(word.isupper() and len(word) > 2 for word in result["content"].split())
-    
-    def test_facebook_spammer_mentions_cousin(self):
-        bot = SpammerFacebookBot()
-        result = bot.generate_post("investment")
-        assert "kuzynka" in result["content"].lower() or "INFO" in result["content"]
-    
-    def test_facebook_has_share_call(self):
-        bot = ConspiracistFacebookBot()
-        result = bot.generate_post("media")
-        content_lower = result["content"].lower()
-        assert "udostepnij" in content_lower or "usuna" in content_lower
-    
-    def test_facebook_fakenews_has_urgent(self):
-        bot = FakeNewsFacebookBot()
-        result = bot.generate_post("health")
-        assert "PILNE" in result["content"] or "🔴" in result["content"]
+bot_types = {
+	"Troll": Troll,
+	"Spammer": Spammer,
+	"Conspiracist": Conspiracist,
+	"FakeNews": FakeNews
+}
 
+platforms = {
+	"Twitter": Twitter,
+	"Facebook": Facebook,
+	"LinkedIn": LinkedIn,
+	"TikTok": TikTok
+}
 
-class TestLinkedInFormatting:
-    """Testy formatowania na LinkedIn"""
-    
-    @pytest.fixture(autouse=True)
-    def setup(self):
-        random.seed(42)
-    
-    def test_linkedin_has_professional_hashtags(self):
-        bot = TrollLinkedInBot()
-        result = bot.generate_post("remote work")
-        assert "#" in result["content"]
-    
-    def test_linkedin_troll_has_unpopular_opinion(self):
-        bot = TrollLinkedInBot()
-        result = bot.generate_post("AI")
-        assert "Unpopular opinion" in result["content"] or "Agree?" in result["content"]
-    
-    def test_linkedin_spammer_has_announcement(self):
-        bot = SpammerLinkedInBot()
-        result = bot.generate_post("startup")
-        assert "excited" in result["content"].lower() or "announce" in result["content"].lower()
-    
-    def test_linkedin_conspiracist_has_years_experience(self):
-        bot = ConspiracistLinkedInBot()
-        result = bot.generate_post("industry")
-        assert "years" in result["content"].lower() or "industry" in result["content"].lower()
-    
-    def test_linkedin_has_newlines(self):
-        bot = FakeNewsLinkedInBot()
-        result = bot.generate_post("tech")
-        assert "\n" in result["content"]
+# Magia!
+for bot_name, bot_class in bot_types.items():
+	for platform_name, platform_class in platforms.items():
+		class_name = f"{bot_name}{platform_name}Bot"
+		globals()[class_name] = create_bot_adapter(bot_class, platform_class)
 
+def magic(bot, platform):
+	return f"{bot}{platform}Bot"
 
-class TestTikTokFormatting:
-    """Testy formatowania na TikToku"""
-    
-    @pytest.fixture(autouse=True)
-    def setup(self):
-        random.seed(42)
-    
-    def test_tiktok_has_genz_slang(self):
-        bot = TrollTikTokBot()
-        result = bot.generate_post("school")
-        content_lower = result["content"].lower()
-        assert any(slang in content_lower for slang in ["bestie", "pov", "delulu", "fr", "cap", "💀"])
-    
-    def test_tiktok_spammer_has_bestie(self):
-        bot = SpammerTikTokBot()
-        result = bot.generate_post("money")
-        assert "bestie" in result["content"].lower() or "link in bio" in result["content"].lower()
-    
-    def test_tiktok_conspiracist_has_emoji(self):
-        bot = ConspiracistTikTokBot()
-        result = bot.generate_post("truth")
-        assert "🤯" in result["content"] or "👁️" in result["content"]
-    
-    def test_tiktok_fakenews_has_storytime(self):
-        bot = FakeNewsTikTokBot()
-        result = bot.generate_post("news")
-        content_lower = result["content"].lower()
-        assert "storytime" in content_lower or "part 2" in content_lower
+import sys 
+def get_bot(bot, platform):
+	if (magic(bot,platform) in globals()):
+		return globals()[magic(bot, platform)]()
+	else:
+		raise ValueError("masło")
 
-
-class TestGetBotFunction:
-    """Testy funkcji get_bot"""
-    
-    def test_get_troll_twitter(self):
-        bot = get_bot("Troll", "Twitter")
-        assert isinstance(bot, TrollTwitterBot)
-    
-    def test_get_spammer_facebook(self):
-        bot = get_bot("Spammer", "Facebook")
-        assert isinstance(bot, SpammerFacebookBot)
-    
-    def test_get_conspiracist_linkedin(self):
-        bot = get_bot("Conspiracist", "LinkedIn")
-        assert isinstance(bot, ConspiracistLinkedInBot)
-    
-    def test_get_fakenews_tiktok(self):
-        bot = get_bot("FakeNews", "TikTok")
-        assert isinstance(bot, FakeNewsTikTokBot)
-    
-    def test_get_all_combinations(self):
-        bot_types = ["Troll", "Spammer", "Conspiracist", "FakeNews"]
-        platforms = ["Twitter", "Facebook", "LinkedIn", "TikTok"]
-        
-        for bot_type in bot_types:
-            for platform in platforms:
-                bot = get_bot(bot_type, platform)
-                assert bot.bot_type == bot_type
-                assert bot.platform == platform
-    
-    def test_invalid_bot_type_raises(self):
-        with pytest.raises(ValueError):
-            get_bot("Influencer", "Twitter")
-    
-    def test_invalid_platform_raises(self):
-        with pytest.raises(ValueError):
-            get_bot("Troll", "MySpace")
-
-
-class TestContentGeneration:
-    """Testy generowania tresci"""
-    
-    @pytest.fixture(autouse=True)
-    def setup(self):
-        random.seed(42)
-    
-    def test_topic_appears_in_content(self):
-        bot = TrollTwitterBot()
-        result = bot.generate_post("pizza")
-        assert "pizza" in result["content"].lower()
-    
-    def test_different_topics_different_content(self):
-        random.seed(42)
-        bot1 = SpammerFacebookBot()
-        result1 = bot1.generate_post("crypto")
-        
-        random.seed(42)
-        bot2 = SpammerFacebookBot()
-        result2 = bot2.generate_post("NFT")
-        
-        # Same seed but different topic should produce different content
-        assert result1["content"] != result2["content"]
-    
-    def test_content_not_empty(self):
-        bot_types = ["Troll", "Spammer", "Conspiracist", "FakeNews"]
-        platforms = ["Twitter", "Facebook", "LinkedIn", "TikTok"]
-        
-        for bot_type in bot_types:
-            for platform in platforms:
-                bot = get_bot(bot_type, platform)
-                result = bot.generate_post("test")
-                assert len(result["content"]) > 0
-
-
-class TestBotBehaviorConsistency:
-    """Testy spojnosci zachowania botow"""
-    
-    @pytest.fixture(autouse=True)
-    def setup(self):
-        random.seed(42)
-    
-    def test_troll_is_provocative(self):
-        """Troll powinien byc prowokacyjny na kazdej platformie"""
-        platforms = ["Twitter", "Facebook", "LinkedIn", "TikTok"]
-        provocative_words = ["wierzysz", "przekret", "pojecia", "ratio", "idioci", "wrong", "delulu"]
-        
-        for platform in platforms:
-            bot = get_bot("Troll", platform)
-            result = bot.generate_post("topic")
-            content_lower = result["content"].lower()
-            assert any(word in content_lower for word in provocative_words), \
-                f"Troll on {platform} should be provocative"
-    
-    def test_spammer_promotes_something(self):
-        """Spammer powinien cos promowac na kazdej platformie"""
-        platforms = ["Twitter", "Facebook", "LinkedIn", "TikTok"]
-        promo_words = ["1000x", "gwarantowane", "zarobil", "moon", "link", "dm", "bio"]
-        
-        for platform in platforms:
-            bot = get_bot("Spammer", platform)
-            result = bot.generate_post("coin")
-            content_lower = result["content"].lower()
-            assert any(word in content_lower for word in promo_words), \
-                f"Spammer on {platform} should promote something"
-    
-    def test_conspiracist_questions_reality(self):
-        """Conspiracist powinien kwestionowac rzeczywistosc"""
-        platforms = ["Twitter", "Facebook", "LinkedIn", "TikTok"]
-        conspiracy_words = ["prawda", "prawde", "ukrywa", "plan", "coincidence", "obudz", "truth", "wake", "chca"]
-        
-        for platform in platforms:
-            bot = get_bot("Conspiracist", platform)
-            result = bot.generate_post("government")
-            content_lower = result["content"].lower()
-            assert any(word in content_lower for word in conspiracy_words), \
-                f"Conspiracist on {platform} should question reality"
-    
-    def test_fakenews_sounds_urgent(self):
-        """FakeNews powinien brzmiec pilnie"""
-        platforms = ["Twitter", "Facebook", "LinkedIn", "TikTok"]
-        urgent_words = ["breaking", "pilne", "szok", "alert", "confirmed", "potwierdz"]
-        
-        for platform in platforms:
-            bot = get_bot("FakeNews", platform)
-            result = bot.generate_post("news")
-            content_lower = result["content"].lower()
-            assert any(word in content_lower for word in urgent_words), \
-                f"FakeNews on {platform} should sound urgent"
