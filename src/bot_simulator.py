@@ -1,3 +1,4 @@
+"""
 UWAGA: Ten kod ma EKSPLOZJE KLAS! Uzyj wzorca Bridge.
 
 Mamy 4 typy botow i 4 platformy = 16 klas.
